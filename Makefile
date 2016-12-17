@@ -1,5 +1,5 @@
 game:
-	gcc -o game main.c `pkg-config --cflags --libs sdl2`
+	clang -framework SDL2 -o game main.c
 
 clean:
 	rm game
