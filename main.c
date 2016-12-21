@@ -3,14 +3,14 @@
 #include <OpenGL/gl3.h>
 
 const char *vertex_shader =
-"#version 150\n"
+"#version 410\n"
 "in vec3 v;"
 "void main() {"
 "   gl_Position = vec4(v, 1.0);"
 "}";
 
 const char *fragment_shader =
-"#version 150\n"
+"#version 410\n"
 "out vec4 frag_color;"
 "void main() {"
 "   frag_color = vec4(0.0, 0.0, 1.0, 1.0);"
@@ -30,8 +30,8 @@ int main()
         return 1;
     }
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);

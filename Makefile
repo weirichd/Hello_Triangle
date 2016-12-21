@@ -1,5 +1,5 @@
-game: main.c
-	clang -framework SDL2 -framework OpenGL -o game main.c
+triangle: main.c
+	clang -framework SDL2 -framework OpenGL -o triangle main.c
 
 clean:
-	rm game
+	rm triangle
