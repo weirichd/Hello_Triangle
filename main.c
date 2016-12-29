@@ -22,12 +22,12 @@ const float points[] = {
     -0.5f, -0.5f, 0.0f
 };
 
-int main()
+int init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         printf("Failed to init SDL\n");
-        return 1;
+        exit(1);
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -36,6 +36,11 @@ int main()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
+    return 0;
+}
+
+SDL_Window *create_window()
+{
     SDL_Window *window = SDL_CreateWindow(
             "Hello Triangle",
             SDL_WINDOWPOS_UNDEFINED,
@@ -45,30 +50,21 @@ int main()
             SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN
             );
 
-    if(window == NULL) {
-        printf("Could not create window: %s\n", SDL_GetError());
-        return 1;
-    } else {
-        printf("Window created successfully.\n");
-    }
+    return window;
+}
 
-    SDL_GLContext context = SDL_GL_CreateContext(window);
-
-    if(context == NULL) {
-        printf("OpenGL context could not be created: %s\n", SDL_GetError());
-        return 1;
-    } else {
-        printf("OpenGL context created successfully.\n");
-    }
-
-    SDL_GL_SetSwapInterval(1);
-
-    glClearColor ( 1.0, 1.0, 1.0, 1.0 );
-
+GLuint make_triangle_vbo()
+{
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+
+    return vbo;
+}
+
+GLuint make_triangle_vao(GLuint vbo)
+{
 
     GLuint vao = 0;
     glGenVertexArrays(1, &vao);
@@ -77,6 +73,11 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+    return vao;
+}
+
+GLuint make_program(const char *vs_source, const char *fs_source)
+{
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertex_shader, NULL);
     glCompileShader(vs);
@@ -96,7 +97,7 @@ int main()
         printf("Vertex shader failed to compile. \n MESSAGE: %s \n", infoLog);
         free(infoLog);
 
-        return 1;
+        exit(1);
     }
 
     glGetShaderiv(fs, GL_COMPILE_STATUS, &is_compiled);
@@ -109,7 +110,7 @@ int main()
         printf("Fragment shader failed to compile. %d \n MESSAGE: %s \n", maxlength, infoLog);
         free(infoLog);
 
-        return 1;
+        exit(1);
     }
 
     GLuint shader_program = glCreateProgram();
@@ -133,9 +134,38 @@ int main()
         free(infoLog);
     }
 
-    glUseProgram(shader_program);
+    return shader_program;
+}
 
-    glBindVertexArray(vao);
+int main()
+{
+    init();
+
+    SDL_Window *window = create_window();
+
+    if(window == NULL) {
+        printf("Could not create window: %s\n", SDL_GetError());
+        return 1;
+    } else {
+        printf("Window created successfully.\n");
+    }
+
+    SDL_GLContext context = SDL_GL_CreateContext(window);
+
+    if(context == NULL) {
+        printf("OpenGL context could not be created: %s\n", SDL_GetError());
+        return 1;
+    } else {
+        printf("OpenGL context created successfully.\n");
+    }
+
+    SDL_GL_SetSwapInterval(1);
+
+    glClearColor ( 1.0, 1.0, 1.0, 1.0 );
+
+    GLuint vbo = make_triangle_vbo();
+    GLuint vao = make_triangle_vao(vbo);
+    GLuint shader_program = make_program(vertex_shader, fragment_shader);
 
     SDL_Event events;
 
@@ -149,6 +179,8 @@ int main()
         }
 
         glClear (GL_COLOR_BUFFER_BIT);
+        glUseProgram(shader_program);
+        glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         SDL_GL_SwapWindow(window);
