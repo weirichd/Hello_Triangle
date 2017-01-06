@@ -79,7 +79,7 @@ GLuint make_triangle_vao(GLuint vbo)
 GLuint make_program(const char *vs_source, const char *fs_source)
 {
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vertex_shader, NULL);
+    glShaderSource(vs, 1, &vs_source, NULL);
     glCompileShader(vs);
 
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
